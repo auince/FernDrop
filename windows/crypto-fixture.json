@@ -1,0 +1,6 @@
+{
+  "purpose": "TEST ONLY. Never use this key for a real space.",
+  "testKey": "KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKio=",
+  "plaintext": "{\"version\":1,\"id\":\"a1e51651-cad7-4bfd-9686-4b1ec3218546\",\"senderID\":\"675d2a9a-cef3-4c4c-8f7f-59f386c10332\",\"senderName\":\"测试设备\",\"createdAt\":1788600000,\"kind\":\"text\",\"text\":\"你好，FernDrop 🌿\",\"files\":[]}",
+  "wireBase64": "CQkJCQkJCQkJCQkJEjlyjID8IQaVcXXkMc5e+OktFboV7TCUfn6DGtR0lJ/o/hRD5FsrJqAOi0MSbVSG9EAKiJzyI9LtGOMG+6MRHRawj/iJiVaULsemAf3Lx2umX5X/DM+rAiqjQFsEKDJhv2AvNJXxlN4u0+4u5vqKIZxPTB1sulkTuae6B6FQXIxYzMM7YNrqDU83JnfFreHUeIdvhiT3xKvW8rbqNcKsfVEXpj3HtJTf9iQhhV7oNvWpmGMvw1qlrZ8lFsZA3RanfIHRKqkbqfDc0LtYKQkWnwDDFujQqyc2QDYRgIk3JDBOy0rBDAQp"
+}

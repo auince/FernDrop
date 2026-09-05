@@ -1,0 +1,55 @@
+{
+  "mode": "built-in image_gen (GPT Image)",
+  "assets": [
+    {
+      "name": "idle",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-f67c956c-178b-459b-861e-6265253ec236.png",
+      "prompt": "Use case: stylized-concept. Asset type: desktop app mascot transparent PNG, one single full-body chibi Frieren from Frieren Beyond Journey's End. Consistent production character design: silver-white twin tails, long pointed elf ears, emerald green eyes, tiny red earrings, white short cape and white tunic with fine gold trim, black tights, brown boots. 2.5 heads tall, very cute calm deadpan expression, premium hand-drawn anime sticker art, thin soft charcoal outlines, warm ivory and muted sage palette with pastel lilac accents. Pose: IDLE, standing relaxed, holding a tiny closed grimoire against chest, gentle neutral smile. Centered entire body inside square canvas with 12% padding, front three-quarter view, uniform character scale, crisp readable at 120px. Actual transparent alpha background, no background scene, no floor, no cast shadow, no lettering, no watermark, exactly one character."
+    },
+    {
+      "name": "wave",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-34fc5d6d-0da0-4749-a9d1-ebc562c3bcf6.png",
+      "prompt": "Use case: stylized-concept. Create one individual transparent PNG action variant of the reference chibi Frieren mascot for a desktop app. Preserve EXACT character identity, silver twin tails, elf ears, green eyes, red earrings, white gold-trimmed cape and tunic, black tights, brown boots, lineart, proportions, palette and rendering style of reference. Change pose and expression ONLY to: cheerfully waving hello with one hand. One full-body character centered in square with 12% safe margins, no cropping, readable at 120 pixels. Actual transparent alpha background, no scene, no floor, no shadows, no text, no watermark."
+    },
+    {
+      "name": "copy",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-a41c4c90-e562-4766-9613-05d11dbd547d.png",
+      "prompt": "Use case: stylized-concept. Create one individual transparent PNG action variant of the reference chibi Frieren mascot for a desktop app. Preserve EXACT character identity, silver twin tails, elf ears, green eyes, red earrings, white gold-trimmed cape and tunic, black tights, brown boots, lineart, proportions, palette and rendering style of reference. Change pose and expression ONLY to: holding two small sheets of paper, a focused expression. One full-body character centered in square with 12% safe margins, no cropping, readable at 120 pixels. Actual transparent alpha background, no scene, no floor, no shadows, no text, no watermark."
+    },
+    {
+      "name": "send",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-0be0cfae-29e9-4a87-8f7f-fa2a174391c5.png",
+      "prompt": "Use case: stylized-concept. Create one individual transparent PNG action variant of the reference chibi Frieren mascot for a desktop app. Preserve EXACT character identity, silver twin tails, elf ears, green eyes, red earrings, white gold-trimmed cape and tunic, black tights, brown boots, lineart, proportions, palette and rendering style of reference. Change pose and expression ONLY to: gently launching a tiny paper airplane from her hand. One full-body character centered in square with 12% safe margins, no cropping, readable at 120 pixels. Actual transparent alpha background, no scene, no floor, no shadows, no text, no watermark."
+    },
+    {
+      "name": "receive",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-3ac18f51-c082-48c4-88dd-b889be299230.png",
+      "prompt": "Use case: stylized-concept. Create one individual transparent PNG action variant of the reference chibi Frieren mascot for a desktop app. Preserve EXACT character identity, silver twin tails, elf ears, green eyes, red earrings, white gold-trimmed cape and tunic, black tights, brown boots, lineart, proportions, palette and rendering style of reference. Change pose and expression ONLY to: catching a small floating envelope with both hands. One full-body character centered in square with 12% safe margins, no cropping, readable at 120 pixels. Actual transparent alpha background, no scene, no floor, no shadows, no text, no watermark."
+    },
+    {
+      "name": "success",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-d52de2c8-ef42-4227-9d56-34175e8a5cd3.png",
+      "prompt": "Use case: stylized-concept. Create one individual transparent PNG action variant of the reference chibi Frieren mascot for a desktop app. Preserve EXACT character identity, silver twin tails, elf ears, green eyes, red earrings, white gold-trimmed cape and tunic, black tights, brown boots, lineart, proportions, palette and rendering style of reference. Change pose and expression ONLY to: happy closed-eye smile, giving a thumbs up with tiny gold sparkles. One full-body character centered in square with 12% safe margins, no cropping, readable at 120 pixels. Actual transparent alpha background, no scene, no floor, no shadows, no text, no watermark."
+    },
+    {
+      "name": "waiting",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-988ff3ad-98b9-4da3-a9c3-608fbeb2339d.png",
+      "prompt": "Use case: stylized-concept. Create one individual transparent PNG action variant of the reference chibi Frieren mascot for a desktop app. Preserve EXACT character identity, silver twin tails, elf ears, green eyes, red earrings, white gold-trimmed cape and tunic, black tights, brown boots, lineart, proportions, palette and rendering style of reference. Change pose and expression ONLY to: sitting sleepily on a little closed book, eyes half closed. One full-body character centered in square with 12% safe margins, no cropping, readable at 120 pixels. Actual transparent alpha background, no scene, no floor, no shadows, no text, no watermark."
+    },
+    {
+      "name": "clean",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-a643e69e-3f16-4180-94b0-0e8f8400ceb4.png",
+      "prompt": "Use case: stylized-concept. Create one individual transparent PNG action variant of the reference chibi Frieren mascot for a desktop app. Preserve EXACT character identity, silver twin tails, elf ears, green eyes, red earrings, white gold-trimmed cape and tunic, black tights, brown boots, lineart, proportions, palette and rendering style of reference. Change pose and expression ONLY to: holding a tiny broom, sweeping three small paper scraps. One full-body character centered in square with 12% safe margins, no cropping, readable at 120 pixels. Actual transparent alpha background, no scene, no floor, no shadows, no text, no watermark."
+    },
+    {
+      "name": "large",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-370edd1f-660d-4ddd-b9a0-c178227ec8d5.png",
+      "prompt": "Use case: stylized-concept. Create one individual transparent PNG action variant of the reference chibi Frieren mascot for a desktop app. Preserve EXACT character identity, silver twin tails, elf ears, green eyes, red earrings, white gold-trimmed cape and tunic, black tights, brown boots, lineart, proportions, palette and rendering style of reference. Change pose and expression ONLY to: carrying a large tied parcel with both hands, determined expression. One full-body character centered in square with 12% safe margins, no cropping, readable at 120 pixels. Actual transparent alpha background, no scene, no floor, no shadows, no text, no watermark."
+    },
+    {
+      "name": "offline",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-5ed326e9-c8a2-426a-b561-40c1f397867e.png",
+      "prompt": "Use case: stylized-concept. Create one individual transparent PNG action variant of the reference chibi Frieren mascot for a desktop app. Preserve EXACT character identity, silver twin tails, elf ears, green eyes, red earrings, white gold-trimmed cape and tunic, black tights, brown boots, lineart, proportions, palette and rendering style of reference. Change pose and expression ONLY to: looking puzzled at a small disconnected cable held in her hands. One full-body character centered in square with 12% safe margins, no cropping, readable at 120 pixels. Actual transparent alpha background, no scene, no floor, no shadows, no text, no watermark."
+    }
+  ]
+}

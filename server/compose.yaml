@@ -1,0 +1,33 @@
+services:
+  relay:
+    build: .
+    restart: unless-stopped
+    environment:
+      FERNDROP_TOKEN: ${FERNDROP_TOKEN:?Set FERNDROP_TOKEN in .env}
+    volumes:
+      - relay-data:/data
+    expose:
+      - '8787'
+    mem_limit: 512m
+    cpus: 1
+    logging:
+      driver: json-file
+      options:
+        max-size: '5m'
+        max-file: '2'
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      FERNDROP_DOMAIN: ${FERNDROP_DOMAIN:?Set FERNDROP_DOMAIN in .env}
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on:
+      - relay
+volumes:
+  relay-data:
+  caddy-data:

@@ -1,0 +1,72 @@
+{
+  "mode": "built-in image_gen (GPT Image)",
+  "layout": {
+    "columns": 3,
+    "rows": 2,
+    "frames": 5,
+    "unusedCell": 6
+  },
+  "assets": [
+    {
+      "name": "idle",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-6a6794b4-155b-46e3-a793-c92521b2e49a.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame idle animation. Keep exactly same character design, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT animation frames: idle breathing and blinking: frame1 eyes open relaxed, frame2 gentle inhale hair sway, frame3 blink closed eyes, frame4 halfopen eyes exhale, frame5 relaxed open eyes. Sixth cell repeats first. Character same scale and centered in each cell, feet same baseline, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text, no grid lines.",
+      "frames": 5
+    },
+    {
+      "name": "wave",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-cc86c03a-db11-4d87-9add-f86a69056d7c.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame wave animation. Keep exactly same character design, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT animation frames: waving hello: frame1 hand shoulder high, frame2 arm up palm left, frame3 palm right, frame4 palm left, frame5 hand lowers. Sixth cell repeats first. Character same scale and centered in each cell, feet same baseline, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text, no grid lines.",
+      "frames": 5
+    },
+    {
+      "name": "copy",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-fc07c75f-c41d-4abe-88d5-c9d12199a2fb.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame copy animation. Keep exactly same character design, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT animation frames: copying a little paper: frame1 holds one document, frame2 raises free hand, frame3 second paper appears with one tiny square sparkle, frame4 separates two papers, frame5 stacks papers. Sixth cell repeats first. Character same scale and centered in each cell, feet same baseline, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text, no grid lines.",
+      "frames": 5
+    },
+    {
+      "name": "send",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-07356f7d-1a85-44de-b0f1-b408b1d57f28.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame send animation. Keep same silver-haired elf character, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT frames: sending magic: frame1 hands near chest tiny paper, frame2 extends hand, frame3 paper flies up right, frame4 paper farther with two square sparkles, frame5 hands return. Sixth cell repeats first. Same scale and centered in each cell, consistent feet baseline except intentional hop, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text or grid lines.",
+      "correction": "Correct this sprite sheet's grid alignment only. Production 1536x1024 sheet with EXACT SIX equal cells of 512x512, 3 columns 2 rows. Each frame must stay COMPLETELY INSIDE its own cell with 48px clear white padding all sides. No envelope or sparkle may cross a cell boundary. Place character centers exactly x=256,768,1280 and bottom baseline y=460 for top row, y=972 bottom row. Same character height 340px every frame. Move the flying envelopes close to her hand so they fit inside their cell. Preserve five distinct chronological sending poses and sixth return pose, chunky pixel Frieren style, pure white backdrop. Do not draw grid or text.",
+      "frames": 5
+    },
+    {
+      "name": "receive",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-3ee090fb-f8c6-4427-9376-55caaf1a1cbb.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame receive animation. Keep same silver-haired elf character, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT frames: receiving parcel: frame1 empty open hands, frame2 small parcel falls from above, frame3 catches parcel arms bend, frame4 hugs parcel eyes closed happy, frame5 holds parcel smiling. Sixth cell repeats first. Same scale and centered in each cell, consistent feet baseline except intentional hop, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text or grid lines.",
+      "frames": 5
+    },
+    {
+      "name": "success",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-ce08e0c0-8daa-4830-a596-662fc15b4fb4.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame success animation. Keep same silver-haired elf character, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT frames: celebrating success: frame1 relaxed happy, frame2 raises both arms, frame3 tiny hop with eyes closed smile, frame4 lands knees slightly bent, frame5 arms gently lower. Sixth cell repeats first. Same scale and centered in each cell, consistent feet baseline except intentional hop, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text or grid lines.",
+      "frames": 5
+    },
+    {
+      "name": "waiting",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-75d50a07-95c6-4021-b8e3-091c4abc85b1.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame waiting animation. Keep same silver-haired elf character, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT frames: waiting patiently: frame1 holds small hourglass upright, frame2 tilts head left, frame3 blinks and hourglass turns, frame4 tilts head right, frame5 returns upright. Sixth cell repeats first. Same scale and centered in each cell, consistent feet baseline except intentional hop, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text or grid lines.",
+      "frames": 5
+    },
+    {
+      "name": "clean",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-afbcaccf-d20d-4262-a508-5849d62c0751.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame clean animation. Keep same silver-haired elf character, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT frames: sweeping: frame1 holding short broom left, frame2 broom sweeps center, frame3 broom sweeps right small square dust, frame4 broom returns center dust vanishes, frame5 broom back left. Sixth cell repeats first. Same scale and centered in each cell, consistent feet baseline except intentional hop, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text or grid lines.",
+      "frames": 5
+    },
+    {
+      "name": "large",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-70c3949e-6ef7-4d7b-9403-87a6daaf51f8.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame large animation. Keep same silver-haired elf character, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT frames: carrying oversized parcel: frame1 grips large box at waist, frame2 bends knees a little, frame3 lifts box, frame4 adjusts grip and hair bounces, frame5 settles box at waist. Sixth cell repeats first. Same scale and centered in each cell, consistent feet baseline except intentional hop, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text or grid lines.",
+      "frames": 5
+    },
+    {
+      "name": "offline",
+      "path": "/Users/auince/.codex/generated_images/01a0707a-87c0-7551-b0a9-8689b22d3760/exec-aeeb50ae-a988-48e0-a58b-df0673fb485e.png",
+      "prompt": "Edit reference pixel-art Frieren sheet into a production five-frame offline animation. Keep same silver-haired elf character, outfit, chunky pixel style, 3 columns x2 rows, 1536x1024 sheet with six square 512px cells. CRITICAL backdrop: REPLACE the checkerboard with perfectly plain solid pure WHITE #FFFFFF in every empty area. No checkerboard, no shadows, no glow, no background texture. First five cells reading order are consecutive DISTINCT frames: connection lost thoughtful reaction: frame1 holds tiny unconnected cable, frame2 looks down at cable, frame3 head tilts eyes blink, frame4 lifts cable end puzzled, frame5 looks ahead patiently. Sixth cell repeats first. Same scale and centered in each cell, consistent feet baseline except intentional hop, contain hands and props within cell with margin. Simple flat chunky 16-bit sprite art, small palette, no fine illustration detail. No text or grid lines.",
+      "frames": 5
+    }
+  ]
+}
