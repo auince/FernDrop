@@ -101,7 +101,35 @@ func unseal(_ data:Data,key:Data)throws->Envelope {
  guard e.version==1,UUID(uuidString:e.id) != nil,UUID(uuidString:e.senderID) != nil,["text","image","file","ticket","ack"].contains(e.kind) else{throw failure("无效传输协议")}
  guard e.files.count<=256 else{throw failure("文件数量超出限制")};return e
 }
+func validatePairingCloud(server:String,token:String)throws {
+ if server.isEmpty {
+  guard token.isEmpty else{throw failure("配对配置含令牌但缺少服务器地址；仅局域网配对请将两项都留空")}
+ } else {
+  guard token.count>=24 else{throw failure("云端配对缺少有效访问令牌，令牌至少需要 24 个字符")}
+ }
+}
+struct PairingConfiguration {
+ let key:Data,token:String,server:String
+ static func parse(_ text:String)throws->PairingConfiguration {
+  guard let bytes=text.data(using:.utf8),let object=try? JSONSerialization.jsonObject(with:bytes),let v=object as? [String:Any] else{throw failure("配对 JSON 格式不正确，请复制完整的 {…}，不要包含列表符号或代码围栏")}
+  guard v["version"] as? Int==1 else{throw failure("不支持的配对配置版本")}
+  guard let raw=v["spaceKey"] as? String,let key=Data(base64Encoded:raw),key.count==32 else{throw failure("空间密钥无效，需要 Base64 编码的 32 字节密钥")}
+  guard let rawServer=v["serverURL"] as? String,let rawToken=v["token"] as? String else{throw failure("缺少 serverURL 或 token 字段；仅局域网配对时两者填写空字符串")}
+  let server=rawServer.trimmingCharacters(in:.whitespacesAndNewlines).trimmingCharacters(in:CharacterSet(charactersIn:"/")),token=rawToken.trimmingCharacters(in:.whitespacesAndNewlines)
+  try validatePairingCloud(server:server,token:token)
+  return PairingConfiguration(key:key,token:token,server:server)
+ }
+}
 func runCoreTests()throws {
+ // Synthetic pairing credentials only; never test with a user's exported key.
+ let testKey=Data(repeating:42,count:32).base64EncodedString()
+ func config(_ server:String,_ token:String)->String {String(data:try! JSONSerialization.data(withJSONObject:["version":1,"serverURL":server,"token":token,"spaceKey":testKey]),encoding:.utf8)!}
+ let lan=try PairingConfiguration.parse(config("",""));precondition(lan.server.isEmpty && lan.token.isEmpty && lan.key.count==32)
+ let cloud=try PairingConfiguration.parse(config("https://example.com/",String(repeating:"x",count:24)));precondition(cloud.server=="https://example.com")
+ for invalid in [config("https://example.com",""),config("",String(repeating:"x",count:24)),String(config("","").dropLast()),"- "+config("","")] {
+  var rejected=false;do{_=try PairingConfiguration.parse(invalid)}catch{rejected=true};precondition(rejected)
+ }
+ print("PASS: LAN-only pairing, cloud pairing, missing cloud credentials and malformed JSON rejection")
  let temp=FileManager.default.temporaryDirectory.appendingPathComponent("ferndrop-test-"+UUID().uuidString);defer{try? FileManager.default.removeItem(at:temp)}
  let s=try FileStore(support:temp.appendingPathComponent("support"),initialRoot:temp.appendingPathComponent("received"));s.settings.root=temp.appendingPathComponent("received").path;try s.ensureRoot()
  let a=try s.put(Data("a".utf8),name:"报告.docx"),b=try s.put(Data("b".utf8),name:"报告.docx");precondition(a.path != b.path && b.name=="报告 (1).docx")

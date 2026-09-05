@@ -78,3 +78,7 @@ sendme 通过 `send PATH --relay disabled --no-progress` 和 `receive TICKET --r
 ## 交接方式
 
 独立 Windows 分支，通过 Git 提交交换；Mac 侧负责总集成。没有任务通信桥时用户转发阶段结论。仓库凭据、阿里云密码、配对配置均不得写入代码或提交。
+
+## 配对校验修正
+
+允许serverURL/token同时为空的仅局域网配对（spaceKey仍需32字节）。云端地址非空才要求至少24字符的token；不完整JSON提供格式提示。对照mac/Core.swift的PairingConfiguration及PROTOCOL.md实现，禁止用“配置不完整”一概拒绝LAN配置。
