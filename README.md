@@ -1,6 +1,6 @@
 # FernDrop
 
-个人 Mac / Windows 剪贴板与文件传输工具。当前提供 Mac 原生应用、共享 HTML/CSS/JS 界面、Node.js 暂存服务及 Windows 实施规格。Windows 原生外壳尚待实现，公网服务尚未部署。
+个人 Mac / Windows 剪贴板与文件传输工具。当前仓库提供 Mac 原生应用、共享 HTML/CSS/JS 界面、Node.js 暂存服务及 Windows 实施规格。用户的 Windows 版本已参与局域网联调，但其原生外壳源码尚未合入当前主分支。公网 HTTPS 暂存服务已部署，Mac 已配置连接。
 
 ## Mac 本地运行
 
@@ -29,6 +29,7 @@ open build/FernDrop.app
 - [界面与像素动画规范](docs/DESIGN-SYSTEM.md)
 - [Windows 执行单](docs/WINDOWS-HANDOFF.md)
 - [验证记录与待完成项](docs/VALIDATION.md)
+- [公网部署与续期维护](docs/DEPLOYMENT.md)
 
 ## 测试
 
@@ -39,6 +40,6 @@ node tests/native-integration.mjs
 node tests/sendme-integration.mjs
 ```
 
-最后一项在当前环境曾连接超时，不能视为已通过。没有实际完成 Windows 或跨机器端到端验收。
+最后一项在当前环境曾连接超时，不能视为已通过。局域网已观察到双向接收；Windows 公网与大文件跨网络验收仍待完成，详见验证记录。
 
 Git 仅包含源码、素材、平台参考实现及文档，构建产物忽略。vendor/bin/sendme 是官方 macOS 工具，许可在 vendor/。运行配置、密钥和传输内容不得提交。

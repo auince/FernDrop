@@ -64,7 +64,7 @@ kind ack：仅 LAN 回执，id 回显源事件 id，senderID 为接收端设备 
 
 ## 云端 HTTP
 
-公网 TLS 终止在 Caddy。Header：`Authorization: Bearer <token>`，上传另加 `X-Device-ID: <lowercase UUID>`。
+公网 TLS 由反向代理终止（当前部署使用 Nginx）。Header：`Authorization: Bearer <token>`，上传另加 `X-Device-ID: <lowercase UUID>`。
 
 | 方法/路径 | 请求/响应 |
 |---|---|
@@ -82,7 +82,7 @@ kind ack：仅 LAN 回执，id 回显源事件 id，senderID 为接收端设备 
 
 Bonjour DNS-SD 类型 `_ferndrop._tcp`，服务名为 deviceID，端口由系统分配。忽略自己。TCP 数据帧为四字节无符号大端长度 + 加密 envelope，最大帧 28 MB。候选不是可信设备，只有能用空间密钥解密并返回有效加密 ack 才能被视为接收成功。
 
-读帧需累积碎片，不假设一个 TCP read 返回全部内容。总读超时 30 秒；Mac 候选直传尝试约 3 秒后可退云端，重复收件由 id 去重。Windows 实现相同发现服务、TCP framing、ACK，不仅比较 IP 段或公网地址。
+读帧需累积碎片，不假设一个 TCP read 返回全部内容。总读超时 30 秒；Mac 解析服务公布的多个地址，并行尝试最多 32 个去重候选，收到首个有效加密 ACK 后取消其他连接，约 5 秒内未成功则可退云端。这样不会因 Windows 同时公布虚拟网卡地址而阻塞可达的物理网卡。重复收件由 id 去重。Windows 实现相同发现服务、TCP framing、ACK，不仅比较 IP 段或公网地址。
 
 当前使用局域网广播发现，未实现云端地址交换；禁止把 VPN 的相同出口误当成同一 LAN。网络候选更新由 NWBrowser 处理。
 
