@@ -1,0 +1,10 @@
+<Project>
+  <!-- Apply to the WPF desktop host, without changing the protocol checker. -->
+  <PropertyGroup Condition="'$(UseWPF)' == 'true'">
+    <ApplicationIcon>$(MSBuildThisFileDirectory)../ui/assets/app-icon/ferndrop.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(UseWPF)' == 'true'">
+    <Resource Include="$(MSBuildThisFileDirectory)../ui/assets/app-icon/ferndrop.ico"
+              Link="Assets/FernDrop.ico" />
+  </ItemGroup>
+</Project>

@@ -35,6 +35,24 @@ dotnet --list-sdks
 
 ### 1. 主窗口和桥接
 
+#### 应用图标（已有 Windows 版本也要执行）
+
+用户批准的包裹图标已在 `ui/assets/app-icon/ferndrop.png`，Windows 多分辨率图标为同目录 `ferndrop.ico`，包含 16/24/32/48/64/128/256 像素。直接使用已提交的 ICO，不要重新绘制。以后原图变更时，Mac 端运行 `python3 scripts/build-windows-icon.py` 更新 ICO 并一起提交。
+
+`windows/Directory.Build.targets` 自动为目录下 WPF 项目设置 `ApplicationIcon` 并嵌入 `Assets/FernDrop.ico` 资源。若现有项目有自己的 `Directory.Build.targets`，需显式导入上层文件或合并这两项设置；不要只复制共享 UI 而漏掉原生构建配置。
+
+主窗口 XAML 设置 `Icon="Assets/FernDrop.ico"`。托盘若使用 `System.Windows.Forms.NotifyIcon`，在 UI 线程读取同一嵌入资源：
+
+```csharp
+var resource = System.Windows.Application.GetResourceStream(
+    new Uri("pack://application:,,,/Assets/FernDrop.ico"));
+using var stream = resource.Stream;
+using var sourceIcon = new System.Drawing.Icon(stream);
+notifyIcon.Icon = (System.Drawing.Icon)sourceIcon.Clone();
+```
+
+退出时释放托盘及其 Icon。重新执行现有 Release 发布流程，确认使用新发布的 EXE，并检查资源管理器、窗口、任务栏、托盘四处图标。安装程序/快捷方式若有独立图标设置，也引用同一 ICO；旧任务栏固定项需要取消固定后重新固定。仅 `git pull` 不会修改已安装应用。在 `WINDOWS-RESULTS.md` 记录实际验证结果；Mac 端只验证 ICO 文件结构，不能替代 Windows 实机验收。
+
 默认 1130×850，最低 880×720，浅色背景；托盘常驻，关闭隐藏、退出终止进程。前端已支持 `window.chrome.webview` 消息，直接匹配 PROTOCOL.md 全部 method。bootstrap 返回 platform:"Windows"。不要把 Mac 的路径/名称硬编码到 Windows。
 
 所有 Reply 都有 request id；捕获异常后给用户可读错误，不让 UI 挂起。UI 线程负责 Clipboard、文件提交和状态变更；耗时 IO 在后台执行并返回 Dispatcher 提交。
