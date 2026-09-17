@@ -39,11 +39,22 @@ final class FileStore {
   settings=fm.fileExists(atPath:s.path) ? try JSONDecoder().decode(Settings.self,from:Data(contentsOf:s)):Settings()
   if !fm.fileExists(atPath:s.path),let initialRoot{settings.root=initialRoot.path}
   items=fm.fileExists(atPath:h.path) ? try JSONDecoder().decode([Transfer].self,from:Data(contentsOf:h)):[]
+  settings.seen=Array(settings.seen.suffix(4096))
   try ensureRoot();try save()
  }
  var root:URL {URL(fileURLWithPath:settings.root,isDirectory:true)}
  func ensureRoot()throws {try fm.createDirectory(at:root,withIntermediateDirectories:true);try fm.createDirectory(at:root.appendingPathComponent("大文件"),withIntermediateDirectories:true)}
- func save()throws {try JSONEncoder().encode(settings).write(to:support.appendingPathComponent("settings.json"),options:.atomic);try JSONEncoder().encode(items).write(to:support.appendingPathComponent("history.json"),options:.atomic)}
+ func saveSettings()throws {try JSONEncoder().encode(settings).write(to:support.appendingPathComponent("settings.json"),options:.atomic)}
+ func save()throws {
+  // Retain the ten most recently received/created records; payload files follow storage retention.
+  if items.count>10{items=Array(items.prefix(10))}
+  let retained=Set(items.map(\.id)),outbox=support.appendingPathComponent("outbox")
+  if let entries=try? fm.contentsOfDirectory(at:outbox,includingPropertiesForKeys:[.isRegularFileKey,.isSymbolicLinkKey]) {
+   for entry in entries where UUID(uuidString:entry.lastPathComponent) != nil && !retained.contains(entry.lastPathComponent) {
+    if let values=try? entry.resourceValues(forKeys:[.isRegularFileKey,.isSymbolicLinkKey]),values.isRegularFile==true,values.isSymbolicLink != true{try? fm.removeItem(at:entry)}
+   }
+  }
+  try saveSettings();try JSONEncoder().encode(items).write(to:support.appendingPathComponent("history.json"),options:.atomic)}
  func directory(large:Bool,date:Date=Date())throws->URL {
   let formatter=DateFormatter();formatter.locale=Locale(identifier:"en_US_POSIX");formatter.dateFormat="yyyy-MM-dd"
   let dir=root.appendingPathComponent(large ? "大文件":formatter.string(from:date));try fm.createDirectory(at:dir,withIntermediateDirectories:true)
@@ -121,6 +132,7 @@ struct PairingConfiguration {
  }
 }
 func runCoreTests()throws {
+ try runHistoryViewTests()
  // Synthetic pairing credentials only; never test with a user's exported key.
  let testKey=Data(repeating:42,count:32).base64EncodedString()
  func config(_ server:String,_ token:String)->String {String(data:try! JSONSerialization.data(withJSONObject:["version":1,"serverURL":server,"token":token,"spaceKey":testKey]),encoding:.utf8)!}
@@ -141,4 +153,54 @@ func runCoreTests()throws {
  let key=Data(repeating:7,count:32),e=Envelope(id:UUID().uuidString,senderID:UUID().uuidString,senderName:"test",createdAt:0,kind:"text",text:"你好",files:[])
  let encrypted=try seal(e,key:key);let decoded=try unseal(encrypted,key:key);precondition(decoded.text=="你好");var bad=encrypted;bad[15]^=1;do{_=try unseal(bad,key:key);throw failure("tampering accepted")}catch is CryptoKitError{}
  print("PASS: duplicate naming, path sanitization, retention, protected files, large exclusion, managed-directory scope, AES-GCM roundtrip and tamper rejection")
+}
+
+// Only display summaries cross the WebView bridge; copy/send retain the original data.
+func historyView(_ items:[Transfer],query:String,filter:String,offset:Int)->(items:[Transfer],total:Int,offset:Int) {
+ let matches=items.prefix(10).filter { item in
+  (filter=="all" || (filter=="large" ? item.large:item.kind==filter)) &&
+  (query.isEmpty || item.name.localizedCaseInsensitiveContains(query) || item.text.localizedCaseInsensitiveContains(query))
+ }
+ let start=min(max(0,offset),max(0,((matches.count-1)/10)*10))
+ let page=matches.dropFirst(start).prefix(10).map { original -> Transfer in
+  var item=original;item.text=String(item.text.prefix(500));item.name=String(item.name.prefix(180));item.detail=item.detail.map{String($0.suffix(180))}
+  // Only presence is needed for action buttons. Paths stay in the native store.
+  item.files=item.files.isEmpty ? []:[TransferFile(name:"",path:"",size:0)]
+  if let preview=item.preview,preview.utf8.count>100_000{item.preview=nil}
+  return item
+ }
+ return (page,matches.count,start)
+}
+
+func runHistoryViewTests()throws {
+ let full=String(repeating:"长文本 🌿",count:2000)+"only-at-the-end"
+ var entries=(0..<20_000).map{index -> Transfer in
+  var item=Transfer(kind:"text",name:"record \(index)",sender:"fixture");item.text=full;return item
+ }
+ entries[9].kind="file";entries[9].large=true
+ let first=historyView(entries,query:"",filter:"all",offset:0)
+ precondition(first.items.count==10 && first.total==10)
+ precondition(first.items.allSatisfy{$0.text.count==500})
+ precondition(historyView(entries,query:"only-at-the-end",filter:"all",offset:0).items.count==10)
+ precondition(historyView(entries,query:"",filter:"large",offset:9999).items.count==1)
+ precondition(entries[0].text==full)
+ let temp=FileManager.default.temporaryDirectory.appendingPathComponent("ferndrop-retention-"+UUID().uuidString)
+ defer{try? FileManager.default.removeItem(at:temp)}
+ let store=try FileStore(support:temp.appendingPathComponent("support"),initialRoot:temp.appendingPathComponent("received"))
+ let oldPayload=try store.put(Data("keep received file".utf8),name:"keep.txt")
+ let outbox=store.support.appendingPathComponent("outbox");try FileManager.default.createDirectory(at:outbox,withIntermediateDirectories:true)
+ try Data("old cache".utf8).write(to:outbox.appendingPathComponent(entries[10].id))
+ try Data("active cache".utf8).write(to:outbox.appendingPathComponent(entries[0].id))
+ let outside=temp.appendingPathComponent("outside");try Data("untouched".utf8).write(to:outside)
+ let link=outbox.appendingPathComponent(UUID().uuidString)
+ try FileManager.default.createSymbolicLink(at:link,withDestinationURL:outside)
+ store.items=entries;try store.save()
+ precondition(store.items.count==10 && store.items[0].text==full)
+ precondition(!FileManager.default.fileExists(atPath:outbox.appendingPathComponent(entries[10].id).path))
+ precondition(FileManager.default.fileExists(atPath:outbox.appendingPathComponent(entries[0].id).path))
+ precondition(FileManager.default.fileExists(atPath:oldPayload.path))
+ let outsideData=try Data(contentsOf:outside);precondition(outsideData==Data("untouched".utf8))
+ let reloaded=try FileStore(support:store.support)
+ precondition(reloaded.items.count==10)
+ print("PASS: 20,000 histories reduced to newest 10, full-text search, original text and files retained, old outbox removed, symlink target protected, restart preserves cap")
 }

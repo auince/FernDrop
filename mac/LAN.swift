@@ -47,8 +47,8 @@ final class LAN:NSObject,NetServiceDelegate {
   guard !endpoints.isEmpty else{return false}
   return await withCheckedContinuation { continuation in
    let connections=endpoints.map{NWConnection(to:$0,using:.tcp)};var finished=false,remaining=connections.count
-   let deadline=DispatchWorkItem{if !finished{finished=true;connections.forEach{$0.cancel()};continuation.resume(returning:false)}}
-   func finish(_ ok:Bool){guard !finished else{return};remaining-=1;if ok||remaining==0{finished=true;deadline.cancel();connections.forEach{$0.cancel()};continuation.resume(returning:ok)}}
+   let deadline=DispatchWorkItem{if !finished{finished=true;connections.forEach{$0.stateUpdateHandler=nil;$0.cancel()};continuation.resume(returning:false)}}
+   func finish(_ ok:Bool){guard !finished else{return};remaining-=1;if ok||remaining==0{finished=true;deadline.cancel();connections.forEach{$0.stateUpdateHandler=nil;$0.cancel()};continuation.resume(returning:ok)}}
    DispatchQueue.main.asyncAfter(deadline:.now()+5,execute:deadline)
    for c in connections {var settled=false
     func result(_ ok:Bool){guard !settled else{return};settled=true;finish(ok)}

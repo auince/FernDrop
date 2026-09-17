@@ -99,3 +99,9 @@ Bonjour DNS-SD 类型 `_ferndrop._tcp`，服务名为 deviceID，端口由系统
 ### 仅局域网配对
 
 `serverURL`与`token`都为空字符串时，是合法的仅局域网配置；`spaceKey`仍必须为Base64编码的32字节密钥，version仍为1。两端共享该密钥即可尝试LAN传输。地址非空时令牌至少24字符；令牌非空但地址为空应明确报错。导出未配置云端的空间时，两字段均导出为空。JSON截断、带列表前缀、错误密钥与缺失字段分别给出具体错误。配置本身不带云端访问能力时，不得宣传公网可用。Windows执行方必须同步采用该校验规则。
+
+### 有界历史视图（可选能力，2026-09-18）
+
+原生历史仅保留最新 10 条完整记录。`boundedHistory:true` 表示 `items` 为原生搜索结果摘要，并提供 `historyTotal/historyMatches/historyOffset`。UI 调用 `setHistoryView`，参数 `{query,filter,offset}`，filter 为 all/text/image/file/large；原生按完整正文搜索，推送更新摘要。摘要正文上限 500 字符，列表实际标题最多 160 字符，复制/发送仍按 id 读取原始正文。文件摘要仅提供非空标记，不向界面传递本地路径。
+
+云端轮询仅处理事件响应末尾 10 条并推进响应游标；这是客户端历史保留策略，不更改服务端 wire format 或 TTL。

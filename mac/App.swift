@@ -4,6 +4,8 @@ import CryptoKit
 
 final class App: NSObject,NSApplicationDelegate,WKScriptMessageHandler,WKNavigationDelegate,NSWindowDelegate {
  var window:NSWindow!;var web:WKWebView!;var statusItem:NSStatusItem!;var store:FileStore!;var lan=LAN()
+ var historyQuery="",historyFilter="all",historyOffset=0
+ var lastSnapshot:Data?;var pushScheduled=false;var pushInFlight=false;var pushAgain=false
  var key=Data();var token="";var clipboardCount=0;var timer:Timer?;var polling=false;var connected=false;var used=0
  var busy=Set<String>();var processes:[String:Process]=[:];var lastCleanup=Date.distantPast;var seen=Set<String>()
  let pasteboard=NSPasteboard.general;let remoteType=NSPasteboard.PasteboardType("app.ferndrop.remote")
@@ -39,10 +41,31 @@ final class App: NSObject,NSApplicationDelegate,WKScriptMessageHandler,WKNavigat
  func windowShouldClose(_ sender:NSWindow)->Bool {sender.orderOut(nil);return false}
  func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {for p in processes.values where p.isRunning{p.terminate()};try? store.save();return .terminateNow}
  func webView(_ webView:WKWebView,decidePolicyFor navigationAction:WKNavigationAction,decisionHandler:@escaping(WKNavigationActionPolicy)->Void){decisionHandler(navigationAction.request.url?.isFileURL==true ? .allow:.cancel)}
- func js(_ method:String,_ args:[Any]){guard JSONSerialization.isValidJSONObject(args),let data=try? JSONSerialization.data(withJSONObject:args),let string=String(data:data,encoding:.utf8) else{return};web?.evaluateJavaScript("window.FernDrop && window.FernDrop.\(method)(...\(string))",completionHandler:nil)}
+ func js(_ method:String,_ args:[Any]){
+  // Keep the JavaScript source constant: payloads must not become cached executable code.
+  web?.callAsyncJavaScript("if (window.FernDrop) window.FernDrop[method](...args)",arguments:["method":method,"args":args],in:nil,in:.page,completionHandler:nil)
+ }
  func event(_ pose:String,_ text:String){js("event",[pose,text])}
- func snapshot()->[String:Any]{["items":object(store.items),"enabled":store.settings.enabled,"deviceName":store.settings.deviceName,"root":store.settings.root,"serverURL":store.settings.serverURL,"platform":"macOS","configured": !store.settings.serverURL.isEmpty && !token.isEmpty,"connected":connected,"used":used,"quota":200_000_000,"peers":lan.candidates.map{_ in "已发现的局域网设备"}]}
- func push(){js("update",[snapshot()])}
+ func snapshot()->[String:Any]{
+  let view=historyView(store.items,query:historyQuery,filter:historyFilter,offset:historyOffset)
+  return ["items":object(view.items),"historyTotal":store.items.count,"historyMatches":view.total,"historyOffset":view.offset,"boundedHistory":true,"enabled":store.settings.enabled,"deviceName":store.settings.deviceName,"root":store.settings.root,"serverURL":store.settings.serverURL,"platform":"macOS","configured": !store.settings.serverURL.isEmpty && !token.isEmpty,"connected":connected,"used":used,"quota":200_000_000,"peers":lan.candidates.map{_ in "已发现的局域网设备"}]
+ }
+ func push(){
+  guard web != nil else{return}
+  if pushInFlight{pushAgain=true;return}
+  guard !pushScheduled else{return};pushScheduled=true
+  DispatchQueue.main.asyncAfter(deadline:.now()+0.15){[weak self] in
+   guard let self else{return};self.pushScheduled=false
+   let value=self.snapshot()
+   guard let data=try? JSONSerialization.data(withJSONObject:value,options:.sortedKeys),data != self.lastSnapshot else{return}
+   self.lastSnapshot=data;self.pushInFlight=true
+   self.web.callAsyncJavaScript("if (window.FernDrop) window.FernDrop.update(state)",arguments:["state":value],in:nil,in:.page){[weak self] result in
+    guard let self else{return};self.pushInFlight=false
+    if case .failure = result{self.lastSnapshot=nil}
+    if self.pushAgain{self.pushAgain=false;self.push()}
+   }
+  }
+ }
  func userContentController(_ userContentController:WKUserContentController,didReceive message:WKScriptMessage){
   guard message.frameInfo.isMainFrame,message.frameInfo.request.url?.isFileURL==true,let b=message.body as? [String:Any],let id=b["id"] as? String,let method=b["method"] as? String else{return}
   let args=b["args"] as? [String:Any] ?? [:]
@@ -51,6 +74,7 @@ final class App: NSObject,NSApplicationDelegate,WKScriptMessageHandler,WKNavigat
  func handle(_ method:String,_ a:[String:Any])async throws->Any {
   switch method {
   case "bootstrap":return snapshot()
+  case "setHistoryView":historyQuery=String((a["query"] as? String ?? "").prefix(1000));historyFilter=a["filter"] as? String ?? "all";historyOffset=max(0,a["offset"] as? Int ?? 0);push()
   case "toggleSync":menuToggle()
   case "sendText":let text=a["text"] as? String ?? "";guard !text.isEmpty,text.utf8.count<=1_000_000 else{throw failure("文本为空或超过 1 MB")};var item=Transfer(kind:"text",name:String(text.prefix(80)),sender:store.settings.deviceName);item.text=text;item.size=text.utf8.count;enqueue(item)
   case "capture":try capture()
@@ -101,7 +125,7 @@ final class App: NSObject,NSApplicationDelegate,WKScriptMessageHandler,WKNavigat
   return Envelope(id:item.id,senderID:store.settings.deviceID,senderName:item.sender,createdAt:item.createdAt,kind:item.kind,text:item.text,files:files)
  }
  func transmit(_ id:String)async {
-  guard !busy.contains(id),let item=store.items.first(where:{$0.id==id}),!item.large else{return};busy.insert(id);defer{busy.remove(id)}
+  guard busy.count<2,!busy.contains(id),let item=store.items.first(where:{$0.id==id}),!item.large else{return};busy.insert(id);defer{busy.remove(id)}
   do {let outbox=store.support.appendingPathComponent("outbox");try FileManager.default.createDirectory(at:outbox,withIntermediateDirectories:true);let path=outbox.appendingPathComponent(id);let payload:Data
    if FileManager.default.fileExists(atPath:path.path){payload=try Data(contentsOf:path)}else{payload=try seal(wire(item),key:key);try payload.write(to:path,options:.atomic)}
    try await deliver(payload,id:id);event("success","内容已送达传输通道")}catch{update(id,status:"等待重试",detail:error.localizedDescription);event("offline",error.localizedDescription)}
@@ -112,6 +136,7 @@ final class App: NSObject,NSApplicationDelegate,WKScriptMessageHandler,WKNavigat
   let direct=await lan.send(payload){data in guard let ack=try? unseal(data,key:currentKey) else{return false};return ack.kind=="ack" && ack.id==id}
   if direct{update(id,status:"对端已接收",route:"局域网直传",detail:"");return}
   guard !store.settings.serverURL.isEmpty,!token.isEmpty else{throw failure("尚未配置云端，内容已保留在本地")}
+  guard store.items.contains(where:{$0.id==id}) else{return}
   update(id,status:"上传中",route:"云端暂存")
   _=try await request("PUT",path:"/v1/items/"+id,data:payload);update(id,status:"已暂存 · 3 天",route:"云端暂存",detail:"")
  }
@@ -119,15 +144,24 @@ final class App: NSObject,NSApplicationDelegate,WKScriptMessageHandler,WKNavigat
   guard let url=URL(string:store.settings.serverURL+path) else{throw failure("无效服务器地址")};var r=URLRequest(url:url);r.httpMethod=method;r.timeoutInterval=45;r.setValue("Bearer "+token,forHTTPHeaderField:"Authorization");r.setValue(store.settings.deviceID,forHTTPHeaderField:"X-Device-ID");r.httpBody=data;if let data{r.setValue(String(data.count),forHTTPHeaderField:"Content-Length");r.setValue("application/octet-stream",forHTTPHeaderField:"Content-Type")}
   let (bytes,response)=try await URLSession.shared.data(for:r);guard let http=response as? HTTPURLResponse,(200..<300).contains(http.statusCode) else{let code=(response as? HTTPURLResponse)?.statusCode ?? 0;throw failure(code==507 ? "云端 200 MB 空间已满，本地文件保留":code==401 ? "服务器访问令牌不正确":"服务器请求失败（\(code)）")};return bytes
  }
+ func rememberSeen(_ id:String){
+  guard seen.insert(id).inserted else{return}
+  store.settings.seen.append(id)
+  if store.settings.seen.count>4096{
+   let excess=store.settings.seen.count-4096
+   for old in store.settings.seen.prefix(excess){seen.remove(old)}
+   store.settings.seen.removeFirst(excess)
+  }
+ }
  func accept(_ e:Envelope,route:String)throws {
   guard !seen.contains(e.id),e.senderID != store.settings.deviceID else{return}
-  if e.kind=="ticket" {guard let ticket=e.ticket else{throw failure("缺少直传票据")};try receiveSendme(ticket,allowRelay:e.allowRelay ?? false,id:e.id,sender:e.senderName);seen.insert(e.id);store.settings.seen=Array(seen);try store.save();return}
+  if e.kind=="ticket" {guard let ticket=e.ticket else{throw failure("缺少直传票据")};try receiveSendme(ticket,allowRelay:e.allowRelay ?? false,id:e.id,sender:e.senderName);rememberSeen(e.id);try store.save();return}
   var item=Transfer(kind:e.kind,name:"",sender:e.senderName);item.id=e.id;item.createdAt=e.createdAt;item.text=e.text;item.direction="in";item.route=route;item.status="已接收"
   var decoded:[(String,Data)]=[];var total=e.text.utf8.count
   for f in e.files{guard let d=Data(base64Encoded:f.data) else{throw failure("文件数据损坏")};total+=d.count;guard total<=smallLimit else{throw failure("接收内容超过小文件限制")};decoded.append((f.name,d))}
   for(name,data)in decoded{item.files.append(try store.put(data,name:name));if e.kind=="image"{item.preview=thumbnail(data)}}
   item.size=total;item.name=e.kind=="text" ? String(e.text.prefix(80)):item.files.count==1 ? item.files[0].name:"\(item.files.count) 个文件"
-  store.items.insert(item,at:0);seen.insert(e.id);store.settings.seen=Array(seen);try store.save()
+  store.items.insert(item,at:0);rememberSeen(e.id);try store.save()
   let age=Date().timeIntervalSince1970-e.createdAt
   // Do not overwrite an unobserved local copy, stale backfill, or pending outgoing intent.
   if store.settings.enabled && age>=0 && age<15 && pasteboard.changeCount==clipboardCount && busy.isEmpty {try copy(item)}
@@ -145,8 +179,8 @@ final class App: NSObject,NSApplicationDelegate,WKScriptMessageHandler,WKNavigat
   do {
    let data=try await request("GET",path:"/v1/events?after=\(store.settings.cursor)")
    guard let result=try JSONSerialization.jsonObject(with:data) as? [String:Any],let events=result["events"] as? [[String:Any]],let cursor=result["cursor"] as? Int else{throw failure("服务器协议不匹配")}
-   for entry in events {guard let id=entry["id"] as? String,let sender=entry["sender"] as? String else{continue};if sender==store.settings.deviceID || seen.contains(id){continue};let bytes=try await request("GET",path:"/v1/items/"+id);let e=try unseal(bytes,key:key);guard e.id==id,e.senderID==sender else{throw failure("传输身份不匹配")};try accept(e,route:"云端暂存")}
-   store.settings.cursor=cursor;try store.save();connected=true
+   for entry in events.suffix(10) {guard let id=entry["id"] as? String,let sender=entry["sender"] as? String else{continue};if sender==store.settings.deviceID || seen.contains(id){continue};let bytes=try await request("GET",path:"/v1/items/"+id);let e=try unseal(bytes,key:key);guard e.id==id,e.senderID==sender else{throw failure("传输身份不匹配")};try accept(e,route:"云端暂存")}
+   if store.settings.cursor != cursor{store.settings.cursor=cursor;try store.saveSettings()};connected=true
    if let s=try? await request("GET",path:"/v1/status"),let v=try? JSONSerialization.jsonObject(with:s) as? [String:Any]{used=v["used"] as? Int ?? 0}
    if Date().timeIntervalSince(lastRetry)>20 {lastRetry=Date();for item in store.items.filter({$0.direction=="out" && !$0.large && ["等待发送","等待重试"].contains($0.status)}).prefix(3){await transmit(item.id)}}
   }catch{connected=false};push()

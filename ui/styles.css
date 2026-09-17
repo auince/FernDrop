@@ -39,3 +39,13 @@
 @keyframes frames-waiting{0%{background-position:0% 0%;transform:translate(calc(var(--edge) * -0.033203),calc(var(--edge) * 0.000547))}20%{background-position:50% 0%;transform:translate(calc(var(--edge) * 0.001953),calc(var(--edge) * 0.000547))}40%{background-position:100% 0%;transform:translate(calc(var(--edge) * 0.050781),calc(var(--edge) * 0.000547))}60%{background-position:0% 100%;transform:translate(calc(var(--edge) * -0.001953),calc(var(--edge) * 0.047422))}80%{background-position:50% 100%;transform:translate(calc(var(--edge) * 0.019531),calc(var(--edge) * 0.047422))}100%{background-position:0% 0%;transform:translate(calc(var(--edge) * -0.033203),calc(var(--edge) * 0.000547))}}
 .mascot-sprite[data-pose="wave"]{--sheet:url("assets/mascot-pixel/wave.png");--duration:1s;--frames:frames-wave;--origin-x:calc(var(--edge) * -0.025391);--origin-y:calc(var(--edge) * 0.000547)}
 @keyframes frames-wave{0%{background-position:0% 0%;transform:translate(calc(var(--edge) * -0.025391),calc(var(--edge) * 0.000547))}20%{background-position:50% 0%;transform:translate(calc(var(--edge) * 0.001953),calc(var(--edge) * 0.000547))}40%{background-position:100% 0%;transform:translate(calc(var(--edge) * 0.033203),calc(var(--edge) * 0.000547))}60%{background-position:0% 100%;transform:translate(calc(var(--edge) * -0.025391),calc(var(--edge) * 0.049375))}80%{background-position:50% 100%;transform:translate(calc(var(--edge) * 0.001953),calc(var(--edge) * 0.049375))}100%{background-position:0% 0%;transform:translate(calc(var(--edge) * -0.025391),calc(var(--edge) * 0.000547))}}
+
+/* Keep long unbroken clipboard text inside its column; actions remain visible. */
+.items{grid-template-columns:minmax(0,1fr);min-width:0;max-width:100%}
+.item{display:grid;grid-template-columns:42px minmax(0,1fr) auto;min-width:0;width:100%;max-width:100%}
+.item-main{min-width:0;max-width:100%;overflow:hidden}
+.item-title{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.item-meta>span{min-width:0;max-width:100%}
+.item-actions{flex-shrink:0;flex-wrap:nowrap;justify-self:end;margin-left:0}
+#inbox .items{overflow-x:hidden}
